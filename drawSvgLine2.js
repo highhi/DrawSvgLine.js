@@ -9,7 +9,7 @@
  *   http://www.opensource.org/licenses/mit-license.php
  *   http://www.gnu.org/licenses/gpl.html
  */
-;(function(global, definition){
+;(function(definition){
     'use strict';
 
     if(typeof exports === 'object'){
@@ -19,26 +19,26 @@
         define(definition);
 
     } else {
-        global.DrawSvgLine = definition();
+        window.DrawSvgLine = definition();
     }
 
-})(this, function(){
+})(window, document, function(win, doc){
 
     'use strict';
 
     var requestAnimation = 
-        requestAnimationFrame ||
-        mozRequestAnimationFrame ||
-        webkitRequestAnimationFrame ||
-        msRequestAnimationFrame ||
-        setTimeout;
+        window.requestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        window.setTimeout;
 
     var cancelAnimation = 
-        cancelAnimationFrame ||
-        mozCancelAnimationFrame ||
-        webkitCancelAnimationFrame ||
-        msCancelAnimationFrame ||
-        clearTimeout;
+        window.cancelAnimationFrame ||
+        window.mozCancelAnimationFrame ||
+        window.webkitCancelAnimationFrame ||
+        window.msCancelAnimationFrame ||
+        window.clearTimeout;
 
     var FPS = 1000 / 60 | 0;
     var RATIO = 60 / 1000;
