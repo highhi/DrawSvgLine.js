@@ -80,8 +80,7 @@
     DrawSvgLine.prototype.draw = function(){
         var _this = this;
 
-        _this.animated = true;
-        _this._stroke();
+        _this._order();
 
         return _this;
     };
@@ -100,6 +99,20 @@
                 _this.paths[i].style.strokeDashoffset = _this.totalLength[i] * (1 - progress) | 0;
             }
             var handle = requestAnimation(_this._stroke.bind(_this), FPS);
+        }
+    };
+
+    DrawSvgLine.prototype._order = function(){
+        var _this = this,
+            progress = _this.currentFrame / _this.strokeSpeed;
+
+        if (progress > 1) {
+            cancelAnimation(handle);
+            _this.currentFrame = 0;
+            setTimeout(_this._fill.bind(_this), _this.delay);
+        } else {
+            _this.paths[0].style.strokeDashoffset = _this.totalLength[0] * (1 - progress) | 0;
+            var handle = requestAnimation(_this._order.bind(_this), FPS);
         }
     };
 

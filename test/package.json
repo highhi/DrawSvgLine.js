@@ -1,0 +1,24 @@
+{
+  "name": "materal-button",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "author": "highhi",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gulp"
+  ],
+  "browserify": {
+    "transform": [
+      "debowerify"
+    ]
+  },
+  "devDependencies": {
+    "browser-sync": "^1.8.2",
+    "coffee-script": "^1.8.0",
+    "gulp": "^3.8.10"
+  }
+}
