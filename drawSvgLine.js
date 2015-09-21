@@ -13,14 +13,14 @@
 ;(function( global, definition){
     'use strict';
 
-    if(typeof exports === 'object'){
+    if( typeof exports === 'object' ){
         module.exports = definition();
 
-    }else if(typeof define === 'function' && define.amd){
-        define(definition);
+    }else if ( typeof define === 'function' && define.amd ){
+        define( definition );
 
     } else {
-        global.DrawSvgLine = definition();
+        global.drawSvgLine = definition();
     }
 
 })( this, function(){
@@ -49,29 +49,32 @@
 
     function DrawSvgLine( elm, conf ){
         if( !( this instanceof DrawSvgLine ) ) {
-            return new DrawSvgLine( elm );
+            return new DrawSvgLine( elm, conf );
         }
 
+        //options
         var options = extend({
             strokeSpeed : 1000,
             fillSpeed   : 1000,
             delay       : 0
         }, conf );
 
-        this.elm = typeof elm === 'string' ? doc.getElementById( elm ) : elm;
-        this.paths = toArray( this.elm.getElementsByTagName( 'path' ) );
-        this.pathsLen = this.paths.length;
-        this.totalLength = [];
+        this.elm          = typeof elm === 'string' ? doc.getElementById( elm ) : elm;
+        this.paths        = toArray( this.elm.getElementsByTagName( 'path' ) );
+        this.pathsLen     = this.paths.length;
+        this.totalLength  = [];
         this.currentFrame = 0;
+        this.context      = null;
+        this.callback     = null;
+        this.nextCallback = null;
 
-        //options
-        this.strokeSpeed = options.strokeSpeed * RATIO;
-        this.fillSpeed   = options.fillSpeed * RATIO;
-        this.delay       = options.delay;
-        this.fixfox      = options.fixfox;
+        this.options      = options;
+        this.strokeSpeed  = options.strokeSpeed * RATIO;
+        this.fillSpeed    = options.fillSpeed * RATIO;
+        this.delay        = options.delay;
 
         for( var i = this.pathsLen; i--; ){
-            var totalLength = this.paths[i].getTotalLength() + 30;
+            var totalLength = this.paths[i].getTotalLength() + 30 + 1 | 0;
             
             this.totalLength[i] = totalLength;
             this.paths[i].style.strokeDasharray = totalLength + ' ' + totalLength;
@@ -81,11 +84,19 @@
     }
 
     fillProto( DrawSvgLine.prototype, {
-        draw     : draw,
-        compleat : compleat
+        draw : draw,
+        turn : turn
     });
 
-    function draw(){
+    function draw( callback ){
+        if ( typeof callback !== 'undefined' ) {
+            if ( typeof callback !== 'function' ) {
+                throw new TypeError( 'Argument must be a Function.' );
+            } else {
+                this.callback = callback;
+            }
+        }
+        
         stroke.call( this );
         return this;
     }
@@ -118,6 +129,11 @@
             if ( this.callback ){
                 this.callback();
             }
+
+            if ( this.context ) {
+                this.context.draw();
+            }
+
         } else {
             this.currentFrame++;
             for( var i = this.pathsLen; i--; ) {
@@ -127,10 +143,23 @@
         }
     }
 
-    function compleat( func ){
-        if( typeof func !== 'function' ) return;
-        this.callback = func;
-    };
+    function turn( context, callback ) {
+        if ( context.constructor.name !== 'DrawSvgLine' ) {
+            throw new Error( 'The first argument must be an DrawSvgLine object.' );
+        } else {
+            this.context = context;
+        }
+
+        if ( typeof callback !== 'undefined' ) {
+            if ( typeof callback !== 'function' ) {
+                throw new TypeError( 'The second argument must be a Function.' );
+            } else {
+                this.context.callback = callback;
+            }
+        }
+
+        return context;
+    }
 
     //
     // helpaers
