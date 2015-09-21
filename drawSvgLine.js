@@ -66,9 +66,7 @@
         this.currentFrame = 0;
         this.context      = null;
         this.callback     = null;
-        this.nextCallback = null;
 
-        this.options      = options;
         this.strokeSpeed  = options.strokeSpeed * RATIO;
         this.fillSpeed    = options.fillSpeed * RATIO;
         this.delay        = options.delay;
@@ -165,7 +163,7 @@
     // helpaers
     //============================================
     function fillProto( a, b ) {
-        var key
+        var key;
         for ( key in b ) {
             if ( b.hasOwnProperty( key ) && !( key in a ) ) {
                 a[key] = b[key];
