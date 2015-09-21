@@ -53,6 +53,7 @@
 
         _this.elm = typeof elm === 'string' ? document.querySelector(elm) : elm;
         _this.paths = _this.elm.querySelectorAll('path');
+        
         _this.pathsLen = _this.paths.length;
         _this.totalLength = [];
         _this.currentFrame = 0;
