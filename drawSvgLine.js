@@ -9,7 +9,8 @@
  *   http://www.opensource.org/licenses/mit-license.php
  *   http://www.gnu.org/licenses/gpl.html
  */
-;(function(global, definition){
+
+;(function( global, definition){
     'use strict';
 
     if(typeof exports === 'object'){
@@ -22,110 +23,143 @@
         global.DrawSvgLine = definition();
     }
 
-})(this, function(){
+})( this, function(){
 
     'use strict';
 
+    var win = window,
+        doc = document;
+
     var requestAnimation = 
-        requestAnimationFrame ||
-        mozRequestAnimationFrame ||
-        webkitRequestAnimationFrame ||
-        msRequestAnimationFrame ||
-        setTimeout;
+        win.requestAnimationFrame ||
+        win.mozRequestAnimationFrame ||
+        win.webkitRequestAnimationFrame ||
+        win.msRequestAnimationFrame ||
+        win.setTimeout;
 
     var cancelAnimation = 
-        cancelAnimationFrame ||
-        mozCancelAnimationFrame ||
-        webkitCancelAnimationFrame ||
-        msCancelAnimationFrame ||
-        clearTimeout;
+        win.cancelAnimationFrame ||
+        win.mozCancelAnimationFrame ||
+        win.webkitCancelAnimationFrame ||
+        win.msCancelAnimationFrame ||
+        win.clearTimeout;
 
-    var FPS = 1000 / 60 | 0;
+    var FPS   = 1000 / 60 | 0;
     var RATIO = 60 / 1000;
 
-    function DrawSvgLine(elm, options){
-        if(!(this instanceof DrawSvgLine)){
-            return new DrawSvgLine(elm);
+    function DrawSvgLine( elm, conf ){
+        if( !( this instanceof DrawSvgLine ) ) {
+            return new DrawSvgLine( elm );
         }
 
-        var _this = this;
-        var o = options || {};
+        var options = extend({
+            strokeSpeed : 1000,
+            fillSpeed   : 1000,
+            delay       : 0
+        }, conf );
 
-        _this.elm = typeof elm === 'string' ? document.querySelector(elm) : elm;
-        _this.paths = _this.elm.querySelectorAll('path');
-        
-        _this.pathsLen = _this.paths.length;
-        _this.totalLength = [];
-        _this.currentFrame = 0;
+        this.elm = typeof elm === 'string' ? doc.getElementById( elm ) : elm;
+        this.paths = toArray( this.elm.getElementsByTagName( 'path' ) );
+        this.pathsLen = this.paths.length;
+        this.totalLength = [];
+        this.currentFrame = 0;
 
         //options
-        _this.strokeSpeed = o.strokeSpeed ? o.strokeSpeed * RATIO : 1000 * RATIO;
-        _this.fillSpeed = o.fillSpeed ? o.fillSpeed * RATIO : 1000 * RATIO;
-        _this.delay = o.delay ? o.delay : 0;
-        _this.fixfox = o.fixfox ? o.fixfox : 300;
+        this.strokeSpeed = options.strokeSpeed * RATIO;
+        this.fillSpeed   = options.fillSpeed * RATIO;
+        this.delay       = options.delay;
+        this.fixfox      = options.fixfox;
 
-        for(var i = 0; i < _this.pathsLen; i++){
-            var len = _this.paths[i].getTotalLength() + 30;
-
-            //Firefox対策
-            if(isNaN(len)) len = _this.fixfox;
+        for( var i = this.pathsLen; i--; ){
+            var totalLength = this.paths[i].getTotalLength() + 30;
             
-            _this.totalLength[i] = len;
-            _this.paths[i].style.strokeDasharray = len + ' ' + len;
-            _this.paths[i].style.strokeDashoffset = len;
-            _this.paths[i].style.fillOpacity = 0;
+            this.totalLength[i] = totalLength;
+            this.paths[i].style.strokeDasharray = totalLength + ' ' + totalLength;
+            this.paths[i].style.strokeDashoffset = totalLength;
+            this.paths[i].style.fillOpacity = 0;
         }
     }
 
-    DrawSvgLine.prototype.draw = function(){
-        var _this = this;
-        _this._stroke();
+    fillProto( DrawSvgLine.prototype, {
+        draw     : draw,
+        compleat : compleat
+    });
 
-        return _this;
-    };
+    function draw(){
+        stroke.call( this );
+        return this;
+    }
 
-    DrawSvgLine.prototype._stroke = function(){
-        var _this = this,
-            progress = _this.currentFrame / _this.strokeSpeed,
-            handle = null;
+    function stroke() {
+        var progress = this.currentFrame / this.strokeSpeed,
+            handle;
 
-        if (progress > 1) {
+        if ( progress > 1 ) {
             cancelAnimation(handle);
-            _this.currentFrame = 0;
-            setTimeout(_this._fill(), _this.delay);
+            this.currentFrame = 0;
+            setTimeout( fill.bind( this ), this.delay );
         } else {
-            _this.currentFrame++;
-            for(var i = 0; i < _this.pathsLen; i++){
-                _this.paths[i].style.strokeDashoffset = _this.totalLength[i] * (1 - progress) | 0;
+            this.currentFrame++;
+            for ( var i = this.pathsLen; i--; ) {
+                this.paths[i].style.strokeDashoffset = this.totalLength[i] * (1 - progress) | 0;
             }
-            handle = requestAnimation(_this._stroke(), FPS);
+            handle = requestAnimation( stroke.bind(this), FPS );
         }
     };
 
-    DrawSvgLine.prototype._fill = function(){
-        var _this = this,
-            progress = _this.currentFrame / _this.fillSpeed,
-            handle = null;
+    function fill(){
+        var progress = this.currentFrame / this.fillSpeed,
+            handle;
 
-        if (progress > 1){
-            cancelAnimation(handle);
-            _this.currentFrame = 0;
-            if(this.callback){
+        if ( progress > 1 ){
+            cancelAnimation( handle );
+            this.currentFrame = 0;
+
+            if ( this.callback ){
                 this.callback();
             }
-        }else {
-            _this.currentFrame++;
-            for(var i = 0; i < _this.pathsLen; i++){
-                _this.paths[i].style.fillOpacity = progress;
+        } else {
+            this.currentFrame++;
+            for( var i = this.pathsLen; i--; ) {
+                this.paths[i].style.fillOpacity = progress;
             }
-            handle = requestAnimation(_this._fill(), FPS);
+            handle = requestAnimation( fill.bind( this ), FPS );
         }
-    };
+    }
 
-    DrawSvgLine.prototype.compleat = function(func){
-        if(typeof func !== 'function') return;
+    function compleat( func ){
+        if( typeof func !== 'function' ) return;
         this.callback = func;
     };
+
+    //
+    // helpaers
+    //============================================
+    function fillProto( a, b ) {
+        var key
+        for ( key in b ) {
+            if ( b.hasOwnProperty( key ) && !( key in a ) ) {
+                a[key] = b[key];
+            }
+        }
+    }
+
+    function extend( a, b ) {
+        if ( typeof b === 'undefined' ) {
+            return a;
+        }
+        var key;
+        for ( key in b ) {
+            if ( b.hasOwnProperty( key ) && a.hasOwnProperty( key ) ) {
+                a[key] = b[key];
+            }
+        }
+        return a;
+    }
+
+    function toArray( obj ) {
+        return Array.prototype.slice.call( obj );
+    }
 
     return DrawSvgLine;
 });
