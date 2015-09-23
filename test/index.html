@@ -20,20 +20,43 @@
         text-align: center;
     }
     svg {
-
+        width: 26%;
+        height: auto;
     }
     svg path {
-        stroke: #000;
-        fill: #000;
+        stroke: #ff8888;
+        fill: #ff8888;
         width: 40%;
         height: auto;
+        stroke-width : 1;
+    }
+    #link {
+        border-radius : 6px;
+        display: inline-block;
+        vertical-align: top;
+        padding: 10px 40px;
+        background: #eee;
+        color : #666;
+        text-decoration: none;
+        font-size: 14px;
+        opacity: 0;
+        -webkit-transition: opacity 1s linear;
+        -moz-transition: opacity 1s linear;
+        -ms-transition: opacity 1s linear;
+        transition: opacity 1s linear;
+    }
+    #link.show {
+        opacity: 1;
+    }
+    #link:hover {
+        color : #333;
     }
 </style>
 </head>
     <body>
 
     <div class="content"><div class="content__inner">
-        <svg id="svg1" width="134px" height="49px">
+        <svg id="svg1" width="134px" height="49px" viewBox="0 0 134 49">
         <g>
             <path d="M0.72,41.16c0.6-1.32,1.32-3.02,2.16-5.1C3.72,33.98,4.6,31.73,5.52,29.31c0.92-2.419,1.86-4.899,2.82-7.44
                 c0.96-2.54,1.86-4.95,2.7-7.23c0.84-2.28,1.569-4.32,2.19-6.12c0.62-1.8,1.07-3.18,1.35-4.14C12.06,5.42,9.9,7,8.1,9.12
@@ -89,7 +112,7 @@
         </g>
         </svg>
 
-        <svg id="svg2" width="116px" height="49px">
+        <svg id="svg2" width="116px" height="49px" viewBox="0 0 116 49">
         <g>
             <path d="M39.12,3.84c0.12,0.681,0.21,1.15,0.27,1.41c0.06,0.26,0.09,0.61,0.09,1.05c0,1.32-0.291,2.55-0.87,3.69
                 c-0.58,1.14-1.371,1.95-2.37,2.43c-0.8-1.08-1.78-2.01-2.94-2.79c-1.161-0.78-2.43-1.419-3.81-1.92c-1.38-0.5-2.811-0.87-4.29-1.11
@@ -134,7 +157,7 @@
         </svg>
 
 
-        <svg id="svg3" width="102px" height="50px">
+        <svg id="svg3" width="102px" height="50px" viewBox="0 0 102 50">
         <g>
             <path d="M23.94,41.37c1,1.72,1.5,3.374,1.5,4.963c0,0.357-0.03,0.686-0.09,0.983c-0.06,0.298-0.13,0.606-0.21,0.924
                 c-0.681-0.101-1.391-0.15-2.13-0.15c-0.741,0-1.511,0-2.31,0c-0.96,0-1.931,0-2.91,0c-0.98,0-2.07,0.064-3.27,0.191
@@ -183,7 +206,8 @@
                 c-1.08,0.16-2.201,0.6-3.36,1.32c-1.161,0.72-2.25,1.68-3.27,2.88c-1.02,1.2-1.95,2.601-2.79,4.2c-0.84,1.6-1.5,3.321-1.98,5.16
                 c3.2-1.6,5.859-3.57,7.98-5.91C96.379,27.24,97.519,24.69,97.679,21.93z"/>
         </g>
-        </svg>
+        </svg><br>
+        <p><a id="link" target="_blank" href="https://github.com/highhi/DrawSvgLine.js">https://github.com/highhi/DrawSvgLine.js</a></p>
     </div></div>
 
     <script src="js/drawSvgLine.js"></script>
@@ -211,6 +235,7 @@
                 console.log( 'compleat!' );
             }).turn(svg3, function(){
                 console.log( 'All compleat!!' );
+                document.getElementById('link').className = 'show';
             });
 
         }, false);

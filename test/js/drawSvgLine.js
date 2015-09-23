@@ -47,6 +47,10 @@
     var FPS   = 1000 / 60 | 0;
     var RATIO = 60 / 1000;
 
+    /**
+     * @param {Node | String} elm - elementのid名、またはelementそのもの
+     * @param {Object} [conf]
+     */
     function DrawSvgLine( elm, conf ){
         if( !( this instanceof DrawSvgLine ) ) {
             return new DrawSvgLine( elm, conf );
@@ -81,11 +85,17 @@
         }
     }
 
+    // DrawSvgLineクラスにメソッドを結合
     fillProto( DrawSvgLine.prototype, {
         draw : draw,
         turn : turn
     });
 
+    /**
+     * 描画スタート
+     * @param  {Function} [callback] 描き終わったあとにのcallback関数
+     * @return {Object}   
+     */
     function draw( callback ){
         if ( typeof callback !== 'undefined' ) {
             if ( typeof callback !== 'function' ) {
@@ -135,7 +145,7 @@
         } else {
             this.currentFrame++;
             for( var i = this.pathsLen; i--; ) {
-                this.paths[i].style.fillOpacity = progress;
+                this.paths[i].style.fillOpacity = 1 * ( progress );
             }
             handle = requestAnimation( fill.bind( this ), FPS );
         }
